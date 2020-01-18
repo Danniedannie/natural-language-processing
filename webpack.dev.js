@@ -24,6 +24,13 @@ module.exports = {
             }
         ],
     },
+
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        compress: true,
+        port: 8080
+    },
+
     plugins: [
         new HtmlWebPackPlugin({
             template: "./src/client/views/index.html",
