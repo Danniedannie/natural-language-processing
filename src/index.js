@@ -10,6 +10,3 @@ export {
     checkForName,
     handleSubmit
 }
-
-
-console.log(checkForName);
