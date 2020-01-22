@@ -1,44 +1,46 @@
-const dotenv = require('dotenv')
-dotenv.config()
-var aylien = require('aylien_textapi')
-var path = require('path')
+const dotenv = require("dotenv");
+dotenv.config();
+var aylien = require("aylien_textapi");
+
+const results = [];
+
 var textapi = new aylien({
-    application_id: 'a49e5674',
-    application_key: 'd80d3cdb1e1d27f79cb58c448878207'
+  application_id: process.env.API_ID,
+  application_key: process.env.API_PASSWORD
 });
 
-const express = require('express')
-const mockAPIResponse = require('./mockAPI.js')
+const express = require("express");
 
-const app = express()
+const app = express();
 
-app.use(express.static('dist'))
+app.use(express.static("dist"));
 
-console.log(__dirname)
+const getAnalysis = async () => {
+  await textapi.sentiment(
+    // you would want to use the form field value
+    { text: "John is a very good football player!" },
+    function(error, response) {
+      if (error === null) {
+        results.push(response);
+      } else {
+        console.log(error);
+      }
+    }
+  );
+};
 
-app.get('/', function(req, res) {
-    console.log('tsst')
-    textapi.sentiment({ 'text': 'John is a very good football player!' }, function(error, response) {
-        console.log('test')
-        if (error === null) {
-            console.log(response);
-        } else {
-            console.log(error);
-        }
-    });
-    res.sendFile('dist/test.html')
-})
+app.post("/test", async function(req, res, next) {
+  await getAnalysis();
+  res.send("success");
+});
 
+app.get("/all", getData);
 
-// designates what port the app will listen to for incoming requests
+function getData(req, res) {
+  res.send(results);
+  console.log(results);
+}
+
 app.listen(3000, function() {
-    console.log('Example app listening on port 3030!')
-})
-
-//app.get('/test', function(req, res) {
-//res.send(mockAPIResponse)
-//})
-/* 
-app.get('/test', function(req, res) {
-    res.send(testing)
-}) */
+  console.log("Example app listening on port 3030!");
+});
